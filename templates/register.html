@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Регистрация TDX</title>
+    <style>
+        :root { --p: #007aff; --bg: #ffffff; --sec: #f2f2f7; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg); display: flex; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
+        .card { width: 100%; max-width: 350px; text-align: center; }
+        h1 { font-size: 28px; margin-bottom: 30px; font-weight: 700; }
+        .input-group { margin-bottom: 15px; }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; background: var(--sec); font-size: 16px; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--p); background: #fff; }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--p); color: #fff; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .hidden { display: none; }
+        #error { color: #ff3b30; font-size: 14px; margin-top: 10px; }
+        .link { display: block; margin-top: 20px; color: var(--p); text-decoration: none; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Создать аккаунт</h1>
+    
+    <div id="step-1">
+        <div class="input-group"><input type="email" id="email" placeholder="Email"></div>
+        <div class="input-group"><input type="text" id="username" placeholder="Имя пользователя"></div>
+        <div class="input-group"><input type="password" id="password" placeholder="Пароль"></div>
+        <button class="btn" onclick="startReg()">Зарегистрироваться</button>
+    </div>
+
+    <div id="step-2" class="hidden">
+        <p style="margin-bottom: 15px; color: #666;">Введите код подтверждения (111111)</p>
+        <div class="input-group"><input type="text" id="reg-code" placeholder="000 000" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 5px;"></div>
+        <button class="btn" onclick="verifyReg()">Подтвердить</button>
+    </div>
+
+    <div id="error"></div>
+    <a href="/login" class="link">Уже есть аккаунт? Войти</a>
+</div>
+
+<script>
+async function startReg() {
+    const data = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+    };
+    if(!data.email || !data.username || !data.password) return;
+
+    const r = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const res = await r.json();
+
+    if(res.status === '2fa_required') {
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.remove('hidden');
+        document.getElementById('error').innerText = "";
+    } else {
+        document.getElementById('error').innerText = res.message || "Ошибка";
+    }
+}
+
+async function verifyReg() {
+    const code = document.getElementById('reg-code').value;
+    const r = await fetch('/verify_reg', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({code})
+    });
+    if(r.ok) {
+        alert("Успешно! Теперь войдите.");
+        window.location.href = '/login';
+    } else {
+        const res = await r.json();
+        document.getElementById('error').innerText = res.message;
+    }
+}
+</script>
+
+</body>
+</html>
+

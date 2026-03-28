@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "email": "deffo5100@gmail.com",
+      "display_name": "Hastlev",
+      "password": "scrypt:32768:8:1$gNYZccI8WPm8hjh3$f089bf8d8624264c922483df78bd06a0e27f5cf95f978d9d135783e9dea7a39a51c62b5827318de7ee157ed61f6a30843663fd57a933a3768855d1424fb17ffe",
+      "2fa_enabled": false,
+      "2fa_password": "",
+      "trusted_devices": []
+    }
+  ],
+  "chats": {},
+  "saved": {}
+}

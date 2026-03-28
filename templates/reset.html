@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDX - Сброс пароля</title>
+    <style>
+        :root { --p: #2563eb; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: sans-serif; }
+        body { background:#f1f5f9; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        .card { background:#fff; width:100%; max-width:400px; padding:40px; border-radius:30px; text-align:center; }
+        input { width:100%; padding:15px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd; font-size:16px; }
+        .btn { width:100%; padding:15px; background:var(--p); color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Сброс пароля</h2>
+        <p style="margin: 20px 0; color: #666;">Введите Email, на который придет новый пароль</p>
+        <input type="email" id="e" placeholder="Ваш Email">
+        <button class="btn" onclick="reset()">Отправить</button>
+        <br><br>
+        <a href="/login" style="color: #2563eb; text-decoration: none;">Вернуться назад</a>
+    </div>
+    <script>
+        async function reset() {
+            const res = await fetch('/reset_password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: document.getElementById('e').value})
+            });
+            if(res.ok) alert("Новый пароль отправлен на почту!");
+            else alert("Ошибка: Email не найден");
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки</title>
+    <style>
+        :root { --p: #007aff; --bg: #f2f2f7; }
+        body { background: var(--bg); font-family: -apple-system, sans-serif; padding: 20px; }
+        .group { background: #fff; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+        .row { padding: 12px 15px; border-bottom: 0.5px solid #c6c6c8; display: flex; justify-content: space-between; align-items: center; }
+        .row:last-child { border-bottom: none; }
+        .label { font-size: 17px; }
+        .val { color: #8e8e93; }
+        .btn-exit { color: #ff3b30; text-align: center; display: block; margin-top: 30px; text-decoration: none; }
+        .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; border-top: 0.5px solid #ccc; display: flex; justify-content: space-around; align-items: center; }
+        .tab-bar a { text-decoration: none; color: #8e8e93; font-size: 11px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1 style="margin-bottom: 20px;">Настройки</h1>
+    
+    <div class="group">
+        <div class="row">
+            <span class="label">Имя профиля</span>
+            <span class="val">{{ user.display_name }}</span>
+        </div>
+        <div class="row">
+            <span class="label">Двухфакторная защита</span>
+            <span class="val" style="color:var(--p)">Включена</span>
+        </div>
+    </div>
+
+    <div class="group">
+        <div class="row">
+            <span class="label">SOCKS5 Proxy</span>
+            <span class="val">Выключено</span>
+        </div>
+        <div class="row">
+            <span class="label">Админ-панель</span>
+            <span class="val">В разработке</span>
+        </div>
+    </div>
+
+    <a href="/logout" class="btn-exit">Выйти из TDX</a>
+
+    <div class="tab-bar">
+        <a href="/">💬<br>Чаты</a>
+        <a href="/profile">👤<br>Профиль</a>
+        <a href="/settings" style="color:var(--p)">⚙️<br>Настройки</a>
+    </div>
+</body>
+</html>
+

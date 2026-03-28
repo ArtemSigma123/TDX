@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Профиль - TDX</title>
+    <style>
+        :root { --p: #2563eb; --bg: #f1f5f9; --red: #ef4444; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
+        
+        body { 
+            background: var(--bg); 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+
+        .card { 
+            background: #fff; 
+            width: 100%; 
+            max-width: 450px; 
+            padding: 30px; 
+            border-radius: 28px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .avatar-lg { 
+            width: 90px; 
+            height: 90px; 
+            background: var(--p); 
+            color: #fff; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 36px; 
+            font-weight: 900; 
+            margin: 0 auto 15px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .user-status {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e0e7ff;
+            color: var(--p);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .section { margin-bottom: 25px; text-align: left; }
+        .section label { 
+            font-size: 11px; 
+            color: #64748b; 
+            font-weight: 800; 
+            display: block; 
+            margin-bottom: 8px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        input { 
+            flex: 1;
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 16px; 
+            background: #f8fafc;
+            outline: none;
+            transition: 0.2s;
+        }
+        input:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        .btn-save { 
+            background: var(--p); 
+            color: #fff; 
+            border: none; 
+            padding: 0 20px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-out { 
+            background: #fee2e2; 
+            color: var(--red); 
+            text-decoration: none; 
+            padding: 16px; 
+            border-radius: 16px; 
+            font-weight: bold; 
+            text-align: center;
+            transition: 0.2s;
+        }
+        .btn-out:hover { background: var(--red); color: #fff; }
+
+        .back-link { 
+            text-align: center;
+            display: block; 
+            color: #64748b; 
+            text-decoration: none; 
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="avatar-section">
+            <div class="avatar-lg" id="avatar">{{ user.display_name[0]|upper }}</div>
+            <div class="user-status">{% if user.is_admin %}Администратор{% else %}Участник{% endif %}</div>
+        </div>
+
+        <div class="section">
+            <label>Ваш Никнейм</label>
+            <div class="input-group">
+                <input type="text" id="nick_input" value="{{ user.display_name }}" placeholder="Введите новый ник">
+                <button class="btn-save" onclick="updateNick()">ОК</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <label>Электронная почта</label>
+            <div class="info-box">{{ user.email }}</div>
+        </div>
+
+        <div class="section">
+            <label>Безопасность</label>
+            <div class="security-badge">
+                <span style="font-size: 20px;">🛡️</span>
+                <div>
+                    <b>2FA Защита включена</b>
+                    <p style="font-size: 12px; opacity: 0.8;">Вход подтверждается через почту</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/logout" class="btn-out">Выйти из системы</a>
+            <a href="/" class="back-link">← Вернуться к чатам</a>
+        </div>
+    </div>
+
+    <script>
+        async function updateNick() {
+            const newNick = document.getElementById('nick_input').value.trim();
+            if(!newNick) return alert("Ник не может быть пустым");
+
+            try {
+                const res = await fetch('/update_nickname', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ nickname: newNick })
+                });
+                
+                if(res.ok) {
+                    // Обновляем аватар на лету
+                    document.getElementById('avatar').innerText = newNick[0].toUpperCase();
+                    alert("Никнейм успешно изменен!");
+                } else {
+                    alert("Ошибка при обновлении ника");
+                }
+            } catch(e) {
+                alert("Ошибка сервера");
+            }
+        }
+    </script>
+</body>
+</html>
+

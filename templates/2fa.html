@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Подтверждение входа - TDX</title>
+    <style>
+        :root { --p: #2563eb; --bg: #f1f5f9; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
+        
+        body { 
+            background: var(--bg); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            padding: 20px;
+        }
+
+        .login-card { 
+            background: #fff; 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 40px 30px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        h2 { margin-bottom: 10px; color: #1e293b; font-size: 24px; }
+        p { color: #64748b; font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+
+        .code-input { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 15px; 
+            border: 2px solid #e2e8f0; 
+            font-size: 24px; 
+            text-align: center; 
+            letter-spacing: 10px;
+            font-weight: bold;
+            color: var(--p);
+            outline: none;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .code-input:focus { border-color: var(--p); }
+
+        .btn-verify { 
+            width: 100%; 
+            padding: 16px; 
+            background: var(--p); 
+            color: #fff; 
+            border: none; 
+            border-radius: 15px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .resend { 
+            margin-top: 20px; 
+            display: block; 
+            color: #64748b; 
+            text-decoration: none; 
+            font-size: 13px; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Защита аккаунта</h2>
+        <p>Мы отправили 6-значный код на вашу электронную почту. Пожалуйста, введите его ниже для входа.</p>
+        
+        <input type="text" id="2fa-code" class="code-input" placeholder="000000" maxlength="6" inputmode="numeric">
+        
+        <button class="btn-verify" onclick="verifyCode()">Подтвердить вход</button>
+        
+        <a href="/logout" class="resend">Вернуться к логину</a>
+    </div>
+
+    <script>
+        async function verifyCode() {
+            const codeValue = document.getElementById('2fa-code').value.trim();
+            
+            if (codeValue.length < 6) {
+                alert("Введите полный код");
+                return;
+            }
+
+            try {
+                const response = await fetch('/2fa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: codeValue })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    // Перенаправляем на главную страницу после успеха
+                    window.location.href = '/';
+                } else {
+                    alert(result.message || "Неверный код доступа");
+                }
+            } catch (error) {
+                alert("Ошибка связи с сервером");
+            }
+        }
+
+        // Автофокус на поле ввода при загрузке
+        window.onload = () => document.getElementById('2fa-code').focus();
+    </script>
+</body>
+</html>
+
